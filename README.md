@@ -6,8 +6,10 @@
 2. How to run test suite
 
 *) then after runing the API start the postman.
+
 	--View--
-		Set method to GET and set the URL as "http://localhost:8080/v1/pets/1"(Here 1 is the petId that needs details). and send then the response would apear at the bottom.
+		Set method to GET and set the URL as "http://localhost:8080/v1/pets/1"(Here 1 is the petId that needs details)
+		and send then the response would apear at the bottom.
 
 	--Insert--
 		Set method to POST and set the URL as "http://localhost:8080/v1/pets/addPet" and select JSON type body as follows,

@@ -3,37 +3,34 @@ package com.example.petstore;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.json.JsonObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import io.vertx.ext.web.codec.BodyCodec;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-@Path("/pets")
+
+@Path("/v1/pets")
 @Produces("application/json")
 public class PetResource {
 
 	@APIResponses(value = {
-			@APIResponse(responseCode = "200", description = "All Pets", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(ref = "Pet"))) })
+			@APIResponse(responseCode = "200", description = "All Pets", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(ref = "Pet")))})
 	@GET
 	public Response getPets() {
 
-		return Response.ok(PetDataSet.getInstance().getArrayList()).build();
+		return Response.ok(PetStore.getInstance()).build();
 	}
 
 	@APIResponses(value = {
 			@APIResponse(responseCode = "200", description = "Pet for id", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(ref = "Pet"))),
-			@APIResponse(responseCode = "404", description = "No Pet found for the id.") })
+			@APIResponse(responseCode = "404", description = "No Pet found for the id.")})
 	@GET
 	@Path("{petId}")
 	public Response getPet(@PathParam("petId") int petId) {
@@ -50,158 +47,90 @@ public class PetResource {
 
 	}
 
-
-	@Path("/add")
+	@Path("/addPet")
 	@Produces("application/json")
 	@POST
-	public Response addPet(String request) throws JSONException {
-		JSONObject jsonObject = new JSONObject(request);
-		if(jsonObject.has("name") && jsonObject.has("type") && jsonObject.has("age")){
-			Pet petData= new Pet();
-			petData.setPetName(jsonObject.getString("name"));
-			petData.setPetAge(Integer.parseInt(jsonObject.getString("age")));
-			petData.setPetType(jsonObject.getString("type"));
+	public Response addPetToStore(String request) throws JSONException {
+		JSONObject json = new JSONObject(request);
+		if (json.has("PetName") && json.has("PetType") && json.has("PetAge")) {
+			Pet petData = new Pet();
+			petData.setPetName(json.getString("PetName"));
+			petData.setPetAge(Integer.parseInt(json.getString("PetAge")));
+			petData.setPetType(json.getString("PetType"));
 
-			petData.setPetId(PetDataSet.getInstance().getArrayList().get(PetDataSet.getInstance().getArrayList().size()-1).getPetId()+1);
-			List<Pet> petList= new ArrayList<Pet>();
+			petData.setPetId(PetStore.getInstance().getArrayList().get(PetStore.getInstance().getArrayList().size() - 1).getPetId() + 1);
+
+			List<Pet> petList = new ArrayList<Pet>();
 			List<Pet> temp = new ArrayList<Pet>();
 
 			petList.add(petData);
-			temp.addAll(PetDataSet.getInstance().getArrayList());
+			temp.addAll(PetStore.getInstance().getArrayList());
 			temp.addAll(petList);
-			PetDataSet.getInstance().setArrayList(temp);
+			PetStore.getInstance().setArrayList(temp);
 
 			return Response.ok(petList).build();
-
 		}else{
-			return Response.ok("Error").build();
-		}
-	}
-
-
-	@Path("/search")
-	@Produces("application/json")
-	@GET
-	public Response searchPet(@DefaultValue("-1") @QueryParam("id") int petId,
-							  @DefaultValue("null") @QueryParam("name") String petName,
-							  @DefaultValue("0") @QueryParam("age") int petAge){
-		boolean isPetFound = false;
-		int id = 0;
-		if(petId != -1 && petName.equals("null") && petAge == 0){
-			if (petId < 0) {
-				return Response.status(Status.NOT_FOUND).build();
-			}
-
-			for (int i=0;i<PetDataSet.getInstance().getArrayList().size();i++){
-				if(petId == PetDataSet.getInstance().getArrayList().get(i).getPetId()){
-					isPetFound = true;
-					id = i;
-				}
-			}
-			if(isPetFound){
-				return Response.ok(PetDataSet.getInstance().getArrayList().get(id)).build();
-			}else{
-				return Response.ok("There is not available pet with id = "+petId).build();
-			}
-		}else if(petId == -1 && !petName.equals("null") && petAge == 0){
-			for (int i=0;i<PetDataSet.getInstance().getArrayList().size();i++){
-				if(petName.equals(PetDataSet.getInstance().getArrayList().get(i).getPetName())){
-					isPetFound = true;
-					id = i;
-				}
-			}
-			if(isPetFound){
-				return Response.ok(PetDataSet.getInstance().getArrayList().get(id)).build();
-			}else{
-				return Response.ok("There is not available pet with name = "+petName).build();
-			}
-		}else if(petId == -1 && petName.equals("null") && petAge != 0){
-			List<Pet> temp = new ArrayList<Pet>();
-			for (int i=0;i<PetDataSet.getInstance().getArrayList().size();i++){
-				if(petAge == PetDataSet.getInstance().getArrayList().get(i).getPetAge()){
-					isPetFound = true;
-					id = i;
-					temp.add(PetDataSet.getInstance().getArrayList().get(id));
-				}
-			}
-			if(isPetFound){
-				return Response.ok(temp).build();
-			}else{
-				return Response.ok("There is not available pet with age = "+petAge).build();
-			}
-		}else{
-			return Response.status(Status.NOT_FOUND).build();
+			return Response.ok("Erro 404").build();
 		}
 
-
 	}
-
-
-
 	@DELETE
 	@Produces("application/json")
-	@Path("/delete/{petId}")
-	public Response deletePet(@PathParam("petId") int petId){
-		boolean isPetFound = false;
-		for (int i=0;i<PetDataSet.getInstance().getArrayList().size();i++){
-			if(petId == PetDataSet.getInstance().getArrayList().get(i).getPetId()){
-				PetDataSet.getInstance().getArrayList().remove(i);
-				isPetFound = true;
+	@Path("/deletePet/{petId}")
+	public Response deletePetFromStore(@PathParam("petId") int petId){
+		boolean isFound = false;
+		for (int i = 0; i< PetStore.getInstance().getArrayList().size(); i++){
+			if(petId == PetStore.getInstance().getArrayList().get(i).getPetId()){
+				PetStore.getInstance().getArrayList().remove(i);
+				isFound = true;
 			}
 		}
-		if(isPetFound){
-			return Response.ok("{\n" + "\"successful\":true\n" + "}").build();
+		if(isFound){
+			return Response.ok("Successfully deleted").build();
 		}else{
-			return Response.ok("{\n" + "\"successful\":false\n" + "}").build();
+			return Response.ok("Unsuccessful").build();
 		}
-
 	}
-
-
-
-
 	@PUT
 	@Produces("application/json")
 	@Path("/edit/{petId}")
-	public Response editPet(@PathParam("petId") int petId,String petData) throws JSONException {
-		JSONObject jsonObject = new JSONObject(petData);
+	public Response editPetfromStore(@PathParam("petId") int petId,String petData) throws JSONException {
+		JSONObject json = new JSONObject(petData);
 		boolean isUpdated = false;
 		int id = 0;
-		if(jsonObject.has("name")){
-			for (int i=0;i<PetDataSet.getInstance().getArrayList().size();i++){
-				if(petId == PetDataSet.getInstance().getArrayList().get(i).getPetId()){
-					PetDataSet.getInstance().getArrayList().get(i).setPetName(jsonObject.getString("name"));
+		if(json.has("PetName")){
+			for (int i = 0; i< PetStore.getInstance().getArrayList().size(); i++){
+				if(petId == PetStore.getInstance().getArrayList().get(i).getPetId()){
+					PetStore.getInstance().getArrayList().get(i).setPetName(json.getString("PetName"));
 					isUpdated=true;
 					id = i;
 				}
 			}
 		}
-		if(jsonObject.has("age")){
-			for (int i=0;i<PetDataSet.getInstance().getArrayList().size();i++){
-				if(petId == PetDataSet.getInstance().getArrayList().get(i).getPetId()){
-					PetDataSet.getInstance().getArrayList().get(i).setPetAge(Integer.parseInt(jsonObject.getString("age")));
+		if(json.has("PetAge")){
+			for (int i = 0; i< PetStore.getInstance().getArrayList().size(); i++){
+				if(petId == PetStore.getInstance().getArrayList().get(i).getPetId()){
+					PetStore.getInstance().getArrayList().get(i).setPetAge(Integer.parseInt(json.getString("PetAge")));
 					isUpdated=true;
 					id = i;
 				}
 			}
 		}
-		if(jsonObject.has("type")){
-			for (int i=0;i<PetDataSet.getInstance().getArrayList().size();i++){
-				if(petId == PetDataSet.getInstance().getArrayList().get(i).getPetId()){
-					PetDataSet.getInstance().getArrayList().get(i).setPetType(jsonObject.getString("type"));
+		if(json.has("PetType")){
+			for (int i = 0; i< PetStore.getInstance().getArrayList().size(); i++){
+				if(petId == PetStore.getInstance().getArrayList().get(i).getPetId()){
+					PetStore.getInstance().getArrayList().get(i).setPetType(json.getString("PetType"));
 					isUpdated=true;
 					id = i;
 				}
 			}
 		}
 		if(isUpdated){
-			return Response.ok(PetDataSet.getInstance().getArrayList().get(id)).build();
+			return Response.ok(PetStore.getInstance().getArrayList().get(id)).build();
 		}else{
 			return Response.ok("{\n" + "\"success\":false\n" + "}").build();
 		}
 
 	}
-
-
 
 }

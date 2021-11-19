@@ -25,6 +25,9 @@ dependencies {
     
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
+
+    implementation 'org.json:json:20090211'
+
 }
 
 group 'com.example'

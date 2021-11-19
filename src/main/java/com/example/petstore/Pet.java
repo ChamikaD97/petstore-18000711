@@ -26,32 +26,31 @@ public class Pet {
 		return petId;
 	}
 
-	public void setPetId(Integer petId) {
-		this.petId = petId;
-	}
-
 	public String getPetType() {
 		return petType;
-	}
-
-	public void setPetType(String petType) {
-		this.petType = petType;
 	}
 
 	public String getPetName() {
 		return petName;
 	}
 
-	public void setPetName(String petName) {
-		this.petName = petName;
-	}
-
 	public Integer getPetAge() {
 		return petAge;
+	}
+
+	public void setPetId(Integer petId) {
+		this.petId = petId;
+	}
+
+	public void setPetType(String petType) {
+		this.petType = petType;
+	}
+
+	public void setPetName(String petName) {
+		this.petName = petName;
 	}
 
 	public void setPetAge(Integer petAge) {
 		this.petAge = petAge;
 	}
-
 }

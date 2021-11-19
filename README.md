@@ -15,10 +15,11 @@
 		Set method to POST and set the URL as "http://localhost:8080/v1/pets/addPet" and select JSON type body as follows,
 
 				{
-           			 "PetAge": 25,
-           			 "PetName": "Puppy",
-            			 "PetType": "Dog"
+           			"PetAge": 25,
+           			"PetName": "Puppy",
+            			"PetType": "Dog"
         			}
+			
 			and send it.
 			If it successfull it will return the JSON object that you have created and send,if the attemp is unsuccessfull
 			"Erro 404" returns.
@@ -33,9 +34,9 @@
 		and select JSON type body as follows,
 				
 				{
-           			 "PetAge": 20,
-           			 "PetName": "Tom",
-            			 "PetType": "Cat"
+           			"PetAge": 20,
+           		 	"PetName": "Tom",
+            		 	"PetType": "Cat"
         			}
 		
 		If it successfull returns updated JSON object while returns "Unsuccessful" if not.

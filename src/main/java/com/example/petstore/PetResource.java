@@ -128,7 +128,8 @@ public class PetResource {
 		if(isUpdated){
 			return Response.ok(PetStore.getInstance().getArrayList().get(id)).build();
 		}else{
-			return Response.ok("{\n" + "\"success\":false\n" + "}").build();
+			return Response.ok("Unsuccessful").build();
+
 		}
 
 	}

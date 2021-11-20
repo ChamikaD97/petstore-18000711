@@ -43,3 +43,25 @@
 
 
 3. How to run a CURL/WGET command to test the APIs once deployed
+
+	--View--
+		curl -XGET -H "Content-type: application/json" 'http://localhost:8080/v1/pets'
+		
+	--Insert--	
+	
+		curl -XPOST -H "Content-type: application/json" -d '{
+           			"PetAge": 25,
+           			"PetName": "Puppy",
+            			"PetType": "Dog"
+        			}' 'http://localhost:8080/v1/pets/addPet'
+				
+	--Delete--
+		curl -XDELETE -H "Content-type: application/json" 'http://localhost:8080/v1/pets/deletePet/1'
+	
+	--Update--
+		curl -XPUT -H "Content-type: application/json" -d '{         			
+						"PetAge": 20,
+           		 			"PetName": "Tom",
+            		 			"PetType": "Cat"        			
+						}' 'http://localhost:8080/v1/pets/edit/1'
+						
